@@ -1,5 +1,4 @@
 to do:
-make logout work
 when user name or password not found, create alert
 when new user created successfully, alert user and redirect to log in page
 style profile page
