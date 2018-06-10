@@ -1,5 +1,5 @@
 //on ready??
-
+//declare global variables used throughout app
 let token = localStorage.getItem('token')
   ? localStorage.getItem('token')
   : undefined;
@@ -9,7 +9,7 @@ let loggedInUserName = localStorage.getItem('userName')
 let $stories = $('#stories');
 let userData;
 
-// populate the stories
+//make story a user favorite (or not) when user clicks star
 $('#stories').on('click', 'span', e => {
   $(e.target).toggleClass('fas');
   let storyID = $(e.target)
@@ -18,11 +18,9 @@ $('#stories').on('click', 'span', e => {
   console.log(storyID);
   favoriteThisStory(storyID);
   populateUserData();
-  // $(e.target)
-  //   .parent()
-  //   .toggleClass('favs');
 });
 
+// populate the all stories list
 function populate() {
   $.getJSON(
     'https://hack-or-snooze.herokuapp.com/stories?skip=0&limit=10'
@@ -38,8 +36,8 @@ function populate() {
   });
 }
 populate();
-// sign up logic
 
+// create new account
 $('#signUpButton').on('click', function(e) {
   e.preventDefault();
   let name = $('#name').val();
@@ -59,7 +57,7 @@ $('#signUpButton').on('click', function(e) {
   // to do: log error in HTML
 });
 
-// log in logic
+// user sign in
 $('#logInButton').on('click', function(e) {
   e.preventDefault();
   let username = $('#logInusername').val();
@@ -100,9 +98,6 @@ $('#submitStory').click(function(e) {
   $.ajax('https://hack-or-snooze.herokuapp.com/stories', {
     type: 'POST',
     headers: { Authorization: `Bearer ${token}` },
-    // beforeSend: function(request) {
-    //   request.setRequestHeader('Authorization', `Bearer ${token}`);
-    // },
     data: {
       data: {
         username: localStorage.getItem('userName'),
@@ -123,8 +118,6 @@ $('#submitStory').click(function(e) {
 
 //make favorite show up in API
 function favoriteThisStory(storyID) {
-  // var title = document.getElementById("title");
-  console.log(title, url, author);
   $.ajax(
     `https://hack-or-snooze.herokuapp.com/users/${loggedInUserName}/favorites/${storyID}`,
     {
@@ -172,6 +165,7 @@ function populateUserData() {
       );
     });
 
+    //user can delete a favorite story from favorites
     $('#profileFavorites').on('click', '.fa-times', function(e) {
       let idToDelete = $(e.target)
         .next()
@@ -192,6 +186,7 @@ function populateUserData() {
         .catch(e => console.log('fail'));
     });
 
+    //user can delete a story they have previously added
     $('#profileStories').on('click', '.fa-times', function(e) {
       let idToDelete = $(e.target)
         .next()
@@ -211,24 +206,29 @@ function populateUserData() {
   });
 }
 
+//story submission form shows when user clicks submit
 $('#submit').click(function() {
   $('#storyForm').toggle('fast');
 });
 
+//log in form shows when user clicks login
 $('#loginNav').click(function() {
   $('#logInOrCreateUser').toggle('fast');
 });
 
+//create new user and regular log in forms toggle
 $('#createNewUser').click(function() {
   $('#logInForm').toggle('fast');
   $('#signUpForm').toggle('fast');
 });
 
+//create new user and regular log in forms toggle
 $('#alreadyUser').click(function() {
   $('#logInForm').toggle('fast');
   $('#signUpForm').toggle('fast');
 });
 
+//toggle correct from profile back to previous stories depending on if previous view was favorite stories or all stories
 $('#profileNav').click(function() {
   $('#userProfile').toggle('fast');
   $('#storyContainer').toggle('fast');
@@ -242,7 +242,6 @@ $('#profileNav').click(function() {
 });
 
 //show favorite stories only
-
 $('#favoriteNav').click(function() {
   $('#stories').toggle('fast');
   $('#favList').empty();
@@ -266,4 +265,11 @@ $('#favoriteNav').click(function() {
   } else {
     $('#favoriteNav').text('Favorites');
   }
+});
+
+//user can logout
+$('#logOutNav').click(function() {
+  localStorage.clear();
+  window.location.reload();
+  alert('Goodbye! Sign in again soon!');
 });
